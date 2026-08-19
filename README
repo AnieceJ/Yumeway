@@ -1,0 +1,42 @@
+# Yumeway API
+
+Node.js/Express backend for the Realicious portfolio project. It provides the
+REST APIs, Socket.IO chat service, MySQL data layer, authentication, article,
+shop, and accounting features used by the frontend.
+
+This repository is a sanitized portfolio snapshot. It contains no production
+credentials or personal contact data.
+
+## Requirements
+
+- Node.js 22 or newer
+- pnpm
+- MySQL or MariaDB
+
+## Local setup
+
+1. Copy `.env.example` to `.env` and provide local database values.
+2. Install packages with `pnpm install`.
+3. Create the schema with `pnpm db:push`.
+4. Load demo data with `pnpm db:seed`.
+5. Start the API with `pnpm dev`.
+
+The API listens on `http://localhost:3001` by default. A health check is
+available at `/health`.
+
+## Demo account
+
+- Account: `demo@example.com`
+- Password: `qwe123`
+
+All accounts and profile records in the seed are synthetic demo data.
+
+## Deployment
+
+Configure the variables listed in `.env.example` in the hosting platform.
+`SESSION_SECRET` and `JWT_SECRET` must be long random values. Google OAuth,
+email verification, ECPay, and LINE Pay remain disabled unless their optional
+credentials are supplied.
+
+The service uses Socket.IO and filesystem uploads, so deploy it as a persistent
+Node.js service rather than a serverless function.
