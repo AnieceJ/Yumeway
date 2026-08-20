@@ -5,8 +5,7 @@
   },
   "deploy": {
     "preDeployCommand": [
-      "pnpm db:push",
-      "pnpm db:seed"
+      "pnpm db:push && pnpm db:seed"
     ],
     "startCommand": "pnpm start",
     "healthcheckPath": "/health",
