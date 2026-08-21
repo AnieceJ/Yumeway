@@ -1,9 +1,6 @@
 import crypto from "crypto";
 
 export const ECPAY_STAGE_CONFIG = Object.freeze({
-  merchantId: "3002607",
-  hashKey: "pwFHCqoQZGmho4w6",
-  hashIv: "EkRm7iFT261dpevs",
   paymentUrl: "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5",
 });
 
@@ -39,17 +36,23 @@ export function verifyEcpayCheckMacValue(params, hashKey, hashIv) {
 }
 
 export function getEcpayConfig(env = process.env) {
-  const supplied = [env.ECPAY_MERCHANT_ID, env.ECPAY_HASH_KEY, env.ECPAY_HASH_IV];
-  const suppliedCount = supplied.filter(Boolean).length;
+  const required = {
+    ECPAY_MERCHANT_ID: env.ECPAY_MERCHANT_ID,
+    ECPAY_HASH_KEY: env.ECPAY_HASH_KEY,
+    ECPAY_HASH_IV: env.ECPAY_HASH_IV,
+  };
+  const missing = Object.entries(required)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
 
-  if (suppliedCount > 0 && suppliedCount < supplied.length) {
-    throw new Error("ECPay 設定不完整，MerchantID、HashKey、HashIV 必須一起設定");
+  if (missing.length > 0) {
+    throw new Error(`ECPay 設定不完整，缺少環境變數：${missing.join(", ")}`);
   }
 
   return {
-    merchantId: env.ECPAY_MERCHANT_ID || ECPAY_STAGE_CONFIG.merchantId,
-    hashKey: env.ECPAY_HASH_KEY || ECPAY_STAGE_CONFIG.hashKey,
-    hashIv: env.ECPAY_HASH_IV || ECPAY_STAGE_CONFIG.hashIv,
+    merchantId: env.ECPAY_MERCHANT_ID,
+    hashKey: env.ECPAY_HASH_KEY,
+    hashIv: env.ECPAY_HASH_IV,
     paymentUrl: env.ECPAY_PAYMENT_URL || ECPAY_STAGE_CONFIG.paymentUrl,
   };
 }
