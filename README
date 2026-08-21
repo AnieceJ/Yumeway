@@ -36,8 +36,8 @@ All accounts and profile records in the seed are synthetic demo data.
 Configure the variables listed in `.env.example` in the hosting platform.
 `SESSION_SECRET` and `JWT_SECRET` must be long random values. Google OAuth,
 email verification, and LINE Pay remain disabled unless their optional
-credentials are supplied. ECPay defaults to its official Stage environment and
-public test credentials, so the portfolio checkout never charges a real card.
+credentials are supplied. Configure ECPay with its official Stage credentials
+in the hosting environment so the portfolio checkout never charges a real card.
 
 The service uses Socket.IO and filesystem uploads, so deploy it as a persistent
 Node.js service rather than a serverless function.
