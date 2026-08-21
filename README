@@ -31,6 +31,14 @@ available at `/health`.
 
 All accounts and profile records in the seed are synthetic demo data.
 
+## Demo data reset
+
+Set `DEMO_RESET_ENABLED=true` in the hosting environment to keep the shared
+portfolio account reusable. The API checks every 15 minutes by default and
+removes demo-account shop data older than two hours. Paid-order stock is
+restored in the same database transaction before related orders, tickets,
+point logs, cart rows, and favorites are removed. Other accounts are not reset.
+
 ## Deployment
 
 Configure the variables listed in `.env.example` in the hosting platform.
