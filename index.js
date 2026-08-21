@@ -59,6 +59,7 @@ import favoritesRoutes from "./routes/shop/favorites.js";
 import cors from "cors";
 import db from "./utils/connect-mysql.js";
 import path from "path";
+import { startDemoShopResetScheduler } from "./services/demo-shop-reset.js";
 
 // 捷運地圖
 import stationRouter from "./routes/station.js";
@@ -251,4 +252,5 @@ app.post("/try-uploads", upload.array("photos"), (req, res) => {
 
 httpServer.listen(port, (req, res) => {
   console.log(`伺服器啟動 http://localhost:${port} `);
+  startDemoShopResetScheduler({ pool: db });
 });
