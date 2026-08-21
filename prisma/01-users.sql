@@ -11,7 +11,7 @@ INSERT INTO `users` (`id`, `account`, `password`, `role`, `status`, `created_at`
 (7, 'user007@example.com', '$2b$10$crL50kXLVhA4IYJQJB/AkevV36yNLI5XXLQHjMiRa8cN/yfa9/zX2', 0, 1, '2026-07-23 10:31:11', '2026-07-23 10:31:11', NULL),
 (8, 'user008@example.com', '$2b$10$crL50kXLVhA4IYJQJB/AkevV36yNLI5XXLQHjMiRa8cN/yfa9/zX2', 0, 1, '2026-07-23 10:31:11', '2026-07-23 10:31:11', NULL),
 (9, 'user009@example.com', '$2b$10$crL50kXLVhA4IYJQJB/AkevV36yNLI5XXLQHjMiRa8cN/yfa9/zX2', 0, 1, '2026-07-23 10:31:11', '2026-07-23 10:31:11', NULL),
-(10, 'demo@example.com', '$2b$10$crL50kXLVhA4IYJQJB/AkevV36yNLI5XXLQHjMiRa8cN/yfa9/zX2', 11, 1, '2026-07-23 02:25:09', '2026-07-23 02:28:18', NULL),
+(10, 'demo@example.com', '$2b$10$MZR./eSHGWGjeLt4VDy9Qebp.sgYSSnCxURLqw/lZGjeRfLV7ExIe', 11, 1, '2026-07-23 02:25:09', '2026-07-23 02:28:18', NULL),
 (11, 'user011@example.com', '$2b$10$R5cO2KlZV2omojczuAIe0uCGW5eCA0XC/wY10hLU1ywK3XMHYwo8a', 11, 1, '2026-07-23 02:25:27', '2026-07-23 02:26:50', NULL);
 --cut
 INSERT INTO `user_profile` (`id`, `profile_id`, `first_name`, `last_name`, `nick_name`, `city`, `district`, `address`, `phone`, `birthday`, `avatar`, `updated_at`) VALUES
