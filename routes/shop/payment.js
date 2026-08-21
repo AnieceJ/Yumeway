@@ -2,6 +2,11 @@ import express from "express";
 import db from "../../utils/connect-mysql.js";
 import crypto from "crypto";
 import { authenticateToken } from "../../middlewares/hua/auth.js";
+import {
+  createEcpayCheckMacValue,
+  getEcpayConfig,
+  verifyEcpayCheckMacValue,
+} from "../../utils/ecpay.js";
 
 const router = express.Router();
 const VOUCHER_PROMOTION_VALID_DAYS = 180;
@@ -158,13 +163,11 @@ const paymentStrategies = {
   ecpay: {
     name: "ECPay 信用卡",
     async pay(orderId, total, desc) {
-      const MerchantID = process.env.ECPAY_MERCHANT_ID || "3002607";
-      const HashKey = process.env.ECPAY_HASH_KEY || "5294y06JbISpM5x9";
-      const HashIV = process.env.ECPAY_HASH_IV || "v77hoKGq4kWxNNIS";
+      const config = getEcpayConfig();
 
       const tradeNo = createEcpayTradeNo(orderId);
       const params = {
-        MerchantID,
+        MerchantID: config.merchantId,
         MerchantTradeNo: tradeNo,
         MerchantTradeDate: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().replace(/T/, " ").slice(0, 19).replace(/-/g, "/"),
         PaymentType: "aio",
@@ -178,15 +181,13 @@ const paymentStrategies = {
         NeedExtraPaidInfo: "N",
       };
 
-      const raw = Object.entries(params)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([k, v]) => `${k}=${v}`)
-        .join("&");
+      params.CheckMacValue = createEcpayCheckMacValue(
+        params,
+        config.hashKey,
+        config.hashIv,
+      );
 
-      const checkStr = `HashKey=${HashKey}&${raw}&HashIV=${HashIV}`;
-      params.CheckMacValue = crypto.createHash("sha256").update(encodeURIComponent(checkStr).toLowerCase().replace(/%20/g, "+")).digest("hex").toUpperCase();
-
-      return { action: "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5", method: "POST", params };
+      return { action: config.paymentUrl, method: "POST", params };
     },
   },
 
@@ -274,6 +275,12 @@ router.post("/pay", authenticateToken, async (req, res) => {
 
 // ── POST /payment/ecpay/return — 綠界付款結果回調 ──
 router.post("/ecpay/return", async (req, res) => {
+  const config = getEcpayConfig();
+  if (!verifyEcpayCheckMacValue(req.body, config.hashKey, config.hashIv)) {
+    console.warn("⚠️ 拒絕 CheckMacValue 驗證失敗的綠界付款通知");
+    return res.status(400).send("0|CheckMacValueError");
+  }
+
   const { MerchantTradeNo, RtnCode } = req.body;
   const orderId = getOrderIdFromEcpayTradeNo(MerchantTradeNo);
 
@@ -301,7 +308,13 @@ router.put("/confirm/:orderId", authenticateToken, async (req, res) => {
 
 // ── GET+POST /payment/ecpay/callback — 綠界 OrderResultURL 轉導 ──
 router.all("/ecpay/callback", async (req, res) => {
-  const params = req.method === "POST" ? req.body : req.query;
+  const params = { ...(req.method === "POST" ? req.body : req.query) };
+  const config = getEcpayConfig();
+  if (!verifyEcpayCheckMacValue(params, config.hashKey, config.hashIv)) {
+    console.warn("⚠️ 拒絕 CheckMacValue 驗證失敗的綠界前端回傳");
+    return res.status(400).send("CheckMacValue Error");
+  }
+
   const orderId = getOrderIdFromEcpayTradeNo(params.MerchantTradeNo);
   if (orderId) params.orderId = String(orderId);
   const qs = new URLSearchParams(params).toString();

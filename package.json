@@ -10,6 +10,7 @@
     "start": "node --experimental-strip-types index.js",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
+    "test": "node --test",
     "css": "tailwindcss -i ./src/daisyui.css -o ./css/daisyui.css --watch",
     "postinstall": "prisma generate",
     "check": "node --check index.js"
